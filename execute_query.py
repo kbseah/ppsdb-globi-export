@@ -8,14 +8,14 @@ from wikibaseintegrator import WikibaseIntegrator, datatypes, wbi_helpers
 wbi_config["MEDIAWIKI_API_URL"] = "https://ppsdb.wikibase.cloud/w/api.php"
 wbi_config["SPARQL_ENDPOINT_URL"] = "https://ppsdb.wikibase.cloud/query/sparql"
 wbi_config["WIKIBASE_URL"] = "https://ppsdb.wikibase.cloud"
-wbi_config['MEDIAWIKI_INDEX_URL'] = 'https://ppsdb.wikibase.cloud/w/index.php'
-wbi_config['MEDIAWIKI_REST_URL'] = 'https://ppsdb.wikibase.cloud/w/rest.php',
+wbi_config["MEDIAWIKI_INDEX_URL"] = "https://ppsdb.wikibase.cloud/w/index.php"
+wbi_config["MEDIAWIKI_REST_URL"] = ("https://ppsdb.wikibase.cloud/w/rest.php",)
 
 with open("secrets/bot_password.json", "r") as fh:
     pw = json.load(fh)
 login = wbi_login.Login(user=pw["user"], password=pw["password"])
 
-sparql_prefixes="""
+sparql_prefixes = """
 PREFIX pp: <https://ppsdb.wikibase.cloud/entity/>
 PREFIX ppt: <https://ppsdb.wikibase.cloud/prop/direct/>
 PREFIX pps: <https://ppsdb.wikibase.cloud/prop/>
@@ -24,9 +24,9 @@ PREFIX ppsq: <https://ppsdb.wikibase.cloud/prop/qualifier/>
 PREFIX ppsr: <https://ppsdb.wikibase.cloud/prop/reference/>
 """
 
-query="""
+query = """
 #List all interactions, optionally the localization, interaction type, and references
-SELECT DISTINCT ?argumentTypeId ?argumentTypeName ?sourceTaxonName ?sourceTaxonId ?interactionTypeName ?interactionTypeId ?targetTaxonName ?targetTaxonId ?sourceBodyPartName ?sourceBodyPartId ?referenceDoi ?referenceCitation WHERE {
+SELECT DISTINCT ?argumentTypeId ?argumentTypeName ?sourceTaxonName ?sourceTaxonId ?sourceTaxonWd_qid ?sourceTaxonPpsdb_qid ?interactionTypeName ?interactionTypeId ?targetTaxonName ?targetTaxonId ?targetTaxonWd_qid ?targetTaxonPpsdb_qid ?sourceBodyPartName ?sourceBodyPartId ?referenceDoi ?referenceCitation WHERE {
   ?sourceTaxon pps:P19 ?interaction.
   ?interaction ppss:P19 ?targetTaxon.
   OPTIONAL {
@@ -68,6 +68,16 @@ SELECT DISTINCT ?argumentTypeId ?argumentTypeName ?sourceTaxonName ?sourceTaxonI
     ?targetTaxon ppt:P11 ?targetTaxon_ncbi. 
     BIND ( CONCAT("NCBI:txid", STR(?targetTaxon_ncbi)) as ?targetTaxonId )
   }
+  OPTIONAL {
+    ?sourceTaxon ppt:P2 ?sourceTaxonWd.
+    BIND (STR(REPLACE(STR(?sourceTaxonWd), ".*Q", "WD:Q")) AS ?sourceTaxonWd_qid)
+  }
+  OPTIONAL {
+    ?targetTaxon ppt:P2 ?targetTaxonWd.
+    BIND (STR(REPLACE(STR(?targetTaxonWd), ".*Q", "WD:Q")) AS ?targetTaxonWd_qid)
+  }
+  BIND (STR(REPLACE(STR(?sourceTaxon), ".*Q", "PPSDB:Q")) AS ?sourceTaxonPpsdb_qid)
+  BIND (STR(REPLACE(STR(?targetTaxon), ".*Q", "PPSDB:Q")) AS ?targetTaxonPpsdb_qid)
 #   OPTIONAL {
 #     ?sourceTaxon ppt:P40 ?habitat.
 #     ?habitat rdfs:label ?habitatName.
@@ -91,10 +101,12 @@ fields = [
     "argumentTypeName",
     "sourceTaxonName",
     "sourceTaxonId",
+    "sourceTaxonIds",
     "interactionTypeName",
     "interactionTypeId",
     "targetTaxonName",
     "targetTaxonId",
+    "targetTaxonIds",
     "sourceBodyPartName",
     "sourceBodyPartId",
     "referenceDoi",
@@ -103,12 +115,41 @@ fields = [
 
 # Convert to TSV
 if "bindings" in rec["results"] and len(rec["results"]["bindings"]) > 0:
-    with open("interactions.tsv","w") as fh:
+    with open("interactions.tsv", "w") as fh:
         fh.write("\t".join(fields) + "\n")
         for line in rec["results"]["bindings"]:
             out = []
             for field in fields:
-                if field in line and "value" in line[field]:
+                # concatenate primary and secondary identifiers if available
+                if field == "sourceTaxonIds":
+                    out.append(
+                        "|".join(
+                            [
+                                line[i]["value"]
+                                for i in [
+                                    "sourceTaxonId",
+                                    "sourceTaxonWd_qid",
+                                    "sourceTaxonPpsdb_qid",
+                                ]
+                                if i in line and "value" in line[i]
+                            ]
+                        )
+                    )
+                elif field == "targetTaxonIds":
+                    out.append(
+                        "|".join(
+                            [
+                                line[i]["value"]
+                                for i in [
+                                    "targetTaxonId",
+                                    "targetTaxonWd_qid",
+                                    "targetTaxonPpsdb_qid",
+                                ]
+                                if i in line and "value" in line[i]
+                            ]
+                        )
+                    )
+                elif field in line and "value" in line[field]:
                     out.append(line[field]["value"])
                 else:
                     out.append("")
