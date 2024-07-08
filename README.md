@@ -1,4 +1,6 @@
-[![GloBI Review by Elton](../../actions/workflows/review.yml/badge.svg)](../../actions/workflows/review.yml) [![GloBI](https://api.globalbioticinteractions.org/interaction.svg?accordingTo=globi:kbseah/ppsdb-globi-export)](https://globalbioticinteractions.org/?accordingTo=globi:kbseah/ppsdb-globi-export) 
+[![GloBI Review by Elton](../../actions/workflows/review.yml/badge.svg)](../../actions/workflows/review.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12687627.svg)](https://doi.org/10.5281/zenodo.12687627)
+[![GloBI](https://api.globalbioticinteractions.org/interaction.svg?accordingTo=globi:kbseah/ppsdb-globi-export)](https://globalbioticinteractions.org/?accordingTo=globi:kbseah/ppsdb-globi-export) 
 
 This repository contains an export of interaction data from the
 [Protist-Prokaryote Symbiosis
