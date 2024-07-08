@@ -1,5 +1,4 @@
 { 
-  "_comment": "Sample GloBI dataset descriptor. See http://github.com/globalbioticinteractions for more information.",
-  "citation": "Jorrit H. Poelen. 2014. Species associations manually extracted from literature.",
-  "deprecated": false
+  "citation": "Seah, Brandon K. B. 2024. Protist-Prokaryote Symbiosis Database : Symbiotic interactions extracted from scientific literature.",
+  "deprecated": true
 }
