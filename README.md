@@ -1,6 +1,8 @@
 [![GloBI Review by Elton](../../actions/workflows/review.yml/badge.svg)](../../actions/workflows/review.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12687627.svg)](https://doi.org/10.5281/zenodo.12687627)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12687626.svg)](https://doi.org/10.5281/zenodo.12687626)
 [![GloBI](https://api.globalbioticinteractions.org/interaction.svg?accordingTo=globi:kbseah/ppsdb-globi-export)](https://globalbioticinteractions.org/?accordingTo=globi:kbseah/ppsdb-globi-export) 
+
+# Protist-Prokaryote Symbiosis Database (export for GloBI)
 
 This repository contains an export of interaction data from the
 [Protist-Prokaryote Symbiosis
@@ -18,11 +20,11 @@ Interaction statements have been manually compiled from the literature. Taxa
 are linked to the NCBI Taxonomy identifiers where possible.
 
 The original database is structured as linked open data on a Wikibase instance
-hosted by Wikibase.cloud. For integration to GloBI, a subset of the statements
-are exported in a tabular format (TSV) and version-controlled in this
-repository. The export is performed through a SPARQL query, via a Python script
-`execute_query.py`. The dependencies for the Python script are listed in
-`requirements.txt`.
+hosted by [Wikibase.cloud](https://www.wikibase.cloud/). For integration to
+GloBI, a subset of the statements are exported in a tabular format (TSV) and
+version-controlled in this repository. The export is performed through a SPARQL
+query, via a Python script `execute_query.py`. The dependencies for the Python
+script are listed in `requirements.txt`.
 
 If you have comments or questions please [open an
 issue](https://github.com/kbseah/ppsdb-globi-export/issues/new). Suggestions
