@@ -94,6 +94,8 @@ SELECT DISTINCT ?argumentTypeId ?argumentTypeName ?sourceTaxonName ?sourceTaxonI
 
 wbi = WikibaseIntegrator(login=login)
 
+print("Executing SPARQL query to retrieve records")
+
 rec = wbi_helpers.execute_sparql_query(query=query, prefix=sparql_prefixes)
 
 fields = [
@@ -115,6 +117,8 @@ fields = [
 
 # Convert to TSV
 if "bindings" in rec["results"] and len(rec["results"]["bindings"]) > 0:
+    print("Converting to TSV format")
+    print(f"{str(len(rec['results']['bindings']))} results found")
     with open("interactions.tsv", "w") as fh:
         fh.write("\t".join(fields) + "\n")
         for line in rec["results"]["bindings"]:
